@@ -6,21 +6,10 @@
  * Author: notdevin
  * Author URI: https://anagency.xyz
  * Description: Backpack Pay integration for WooCommerce
- * Version: 0.1.0
+ * Version: 0.1.1
  * License: MIT
  * License URI: https://opensource.org/licenses/MIT
  */
-
-// function backpack_pay_init()
-// {
-//     if (!class_exists('WooCommerce')) {
-//         return;
-//     }
-
-//     require_once 'includes/class-backpack-pay-woocommerce.php';
-// }
-
-// add_action('plugins_loaded', 'backpack_pay_init');
 
 function backpack_pay_admin_notice()
 {
@@ -46,6 +35,24 @@ function backpack_pay_deactivate()
 
 register_activation_hook(__FILE__, 'backpack_pay_activate');
 register_deactivation_hook(__FILE__, 'backpack_pay_deactivate');
+
+// Include your payment gateway class file here
+include_once plugin_dir_path(__FILE__) . 'includes/class-wc-gateway-backpack-pay.php';
+
+function add_wc_gateway_backpack_pay_class($methods)
+{
+    $methods[] = 'WC_Gateway_Backpack_Pay'; // Your class name for the payment gateway
+    return $methods;
+}
+
+function backpack_pay_init()
+{
+    if (!class_exists('WooCommerce'))
+        return;
+    add_filter('woocommerce_payment_gateways', 'add_wc_gateway_backpack_pay_class');
+}
+
+add_action('plugins_loaded', 'backpack_pay_init');
 
 
 
